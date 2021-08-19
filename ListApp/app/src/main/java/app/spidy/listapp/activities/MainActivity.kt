@@ -10,39 +10,33 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
-import app.spidy.listapp.HomeScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import app.spidy.listapp.screens.HomeScreen
 import app.spidy.listapp.ui.theme.ListAppTheme
 import app.spidy.listapp.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            App(viewModel)
+            App()
         }
     }
 }
 
 @Composable
-fun App(viewModel: MainViewModel) {
-    val names: List<String> by viewModel.names.observeAsState(initial = listOf())
-
+fun App(mainViewModel: MainViewModel = viewModel()) {
     ListAppTheme {
         Surface(color = MaterialTheme.colors.background) {
             Column {
-                HomeScreen(names, modifier = Modifier.weight(1f))
-                Button(onClick = { viewModel.loadMore() }) {
-                    Text(text = "Load More")
-                }
+                HomeScreen(mainViewModel, modifier = Modifier.weight(1f), loadMore = {
+                    mainViewModel.loadMore()
+                })
             }
         }
     }
